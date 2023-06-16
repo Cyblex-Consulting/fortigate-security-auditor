@@ -3,11 +3,13 @@ Tool to check a fortigate configuration with the CIS Benchmark.
 
 ## Preparing the configuration
 
-First step is to create a json file from the plain configuration extracted from the Fortigate.
+First step is to create a json file from the plain configuration extracted from the Fortigate. This uses this tool: https://github.com/ssato/fortios-xutils
 ```
 fortios_xutils parse firewall.conf
 ```
 This will create several files in the `out/` repository. The one which will be used is `all.json`
+
+**Note:** The parsing may fail if the configuration file is not indented (which is the case when exported from a Fortimanager). The problem comes from an underlying library used by fortiois_xutils. See this pull request for a fix: https://github.com/ssato/python-anyconfig-fortios-backend/pull/2
 
 ## Running the benchmark
 
