@@ -1,6 +1,7 @@
 # Specific for the project
 out/*
 *.conf
+*.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
