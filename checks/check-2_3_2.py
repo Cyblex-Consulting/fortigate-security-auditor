@@ -43,8 +43,6 @@ class Check_2_3_2(Checker):
         # Check the SNMPv3 users configured
         config_system_snmp_user = self.get_config("system snmp user")
 
-        print(config_system_snmp_user)
-
         if len(config_system_snmp_user['edits']) > 0:
             self.add_message('There are SNMP users defined:')
             for edit in config_system_snmp_user['edits']:
