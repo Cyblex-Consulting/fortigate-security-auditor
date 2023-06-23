@@ -9,6 +9,7 @@ class Checker:
         self.manual_entry = False
         self.auto = True
         self.enabled = True
+        self.levels = None
 
     def __lt__(self, other):
         return self.id < other.id
@@ -16,13 +17,13 @@ class Checker:
     def is_valid(self):
 
         if self.id is None:
-            print("[!] Error: Check id is not defined")
+            print(f'[!] Error in {self.__class__.__name__}: Check id is not defined')
             return False
         if self.title is None:
-            print("[!] Error: Check title is not defined")
+            print(f'[!] Error in {self.__class__.__name__}: Check title is not defined')
             return False
         if self.levels is None or len(self.levels) == 0:
-            print("[!] Error: Check levels are not defined")
+            print(f'[!] Error in {self.__class__.__name__}: Levels are not defined')
             return False
 
         return True
