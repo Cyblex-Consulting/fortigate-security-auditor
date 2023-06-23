@@ -23,15 +23,21 @@ class Check_3_2(Checker):
         
         if len(config_firewall_policy['edits']) > 0:
             for edit in config_firewall_policy['edits']:
-                if edit['service'] == 'ALL':
+                if "service" in edit.keys() and edit['service'] == 'ALL':
                     fail = True
                     self.add_message(f'The policy {edit["uuid"]} is not compliant:')
-                    self.add_message(f'\tname: {edit["name"]}')
-                    self.add_message(f'\tsrcintf: {edit["srcintf"]}')
-                    self.add_message(f'\tdstintf: {edit["dstintf"]}')
-                    self.add_message(f'\tsrcaddr: {edit["srcaddr"]}')
-                    self.add_message(f'\tdstaddr: {edit["dstaddr"]}')
-                    self.add_message(f'\taction: {edit["action"]}')
+                    if "name" in edit.keys():
+                        self.add_message(f'\tname: {edit["name"]}')
+                    if "srcintf" in edit.keys():
+                        self.add_message(f'\tsrcintf: {edit["srcintf"]}')
+                    if "dstintf" in edit.keys():
+                        self.add_message(f'\tdstintf: {edit["dstintf"]}')
+                    if "srcaddr" in edit.keys():
+                        self.add_message(f'\tsrcaddr: {edit["srcaddr"]}')
+                    if "dstaddr" in edit.keys():
+                        self.add_message(f'\tdstaddr: {edit["dstaddr"]}')
+                    if "action" in edit.keys():
+                        self.add_message(f'\taction: {edit["action"]}')
             fail = True
         else:
             self.add_message('There is no policy defined')
