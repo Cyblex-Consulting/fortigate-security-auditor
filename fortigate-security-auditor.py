@@ -12,6 +12,7 @@ parser.add_argument('-q', '--quiet', help='Not interactive: ignore manual steps'
 parser.add_argument('-v', '--verbose', help='Increase verbosity', action='store_true')
 parser.add_argument('-o', '--output', help='Output CSV File')
 parser.add_argument('-l', '--levels', help='CIS levels to check. (default: 1)', nargs='+', default="1")
+parser.add_argument('-i', '--ids', help='CIS checks id to perform. (default: all if applicable)', nargs='+', default=None)
 parser.add_argument('-c', '--resume', help='Resume an audit that was already started. Automatic items are re-checked but manually set values are retrieved from cache.', action='store_true')
 parser.add_argument('config', help='if single argument: combine all lines, if multiple arguments: combine lines from all files', nargs=1)
 args = parser.parse_args()
@@ -55,9 +56,12 @@ checkers = [check_class(config, verbose) for check_class in checks.classes()]
 checkers.sort()
 for checker in checkers:
     if not checker.is_valid():
-        break
+        continue
 
-    if checker.enabled and checker.is_level_applicable(args.levels):
+    if args.ids is not None and checker.id not in args.ids:
+        continue
+
+    if checker.enabled and checker.is_level_applicable(args.levels):       
         if checker.auto:
             checker.run()
         else:
