@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(description='Apply a benchmark to a Fortigate c
 parser.add_argument('-q', '--quiet', help='Not interactive: ignore manual steps', action='store_true')
 parser.add_argument('-v', '--verbose', help='Increase verbosity', action='store_true')
 parser.add_argument('-o', '--output', help='Output CSV File')
-parser.add_argument('-l', '--level', help='CIS level to check (default: 2)', default=1)
+parser.add_argument('-l', '--levels', help='CIS levels to check. (default: 1)', nargs='+', default="1")
 parser.add_argument('-c', '--resume', help='Resume an audit that was already started. Automatic items are re-checked but manually set values are retrieved from cache.', action='store_true')
 parser.add_argument('config', help='if single argument: combine all lines, if multiple arguments: combine lines from all files', nargs=1)
 args = parser.parse_args()
@@ -46,7 +46,7 @@ f.close()
 
 print(f'[+] Config file opened: {filepath}')
 
-print('[+] Starting checks')
+print(f'[+] Starting checks for levels: {",".join(args.levels)}')
 
 performed_checks = []
 
@@ -56,8 +56,8 @@ checkers.sort()
 for checker in checkers:
     if not checker.is_valid():
         break
-        
-    if checker.enabled and int(args.level) in checker.levels:
+
+    if checker.enabled and checker.is_level_applicable(args.levels):
         if checker.auto:
             checker.run()
         else:

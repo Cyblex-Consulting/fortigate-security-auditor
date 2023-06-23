@@ -28,6 +28,13 @@ class Checker:
 
         return True
 
+    def is_level_applicable(self, levels):
+        # Checks it the level asked by the operator is applicable to this check
+        for level in levels:
+            if int(level) in self.levels:
+                return True
+        return False
+
     def print_verbose(self, content):
             print(f'\t| {content}')
 
