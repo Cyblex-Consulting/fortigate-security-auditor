@@ -14,14 +14,12 @@ This will create several files in the `out/` repository. The one which will be u
 ## Running the benchmark
 
 ```
-usage: fortigate-security-auditor.py [-h] [-q] [-v] [-o OUTPUT] [-c] config
+usage: fortigate-security-auditor.py [-h] [-q] [-v] [-o OUTPUT] [-l LEVELS [LEVELS ...]] [-c] config
 
-Apply a benchmark to a Fortigate configuration file. Example: fortigate-security-auditor.py
--q data.json
+Apply a benchmark to a Fortigate configuration file. Example: fortigate-security-auditor.py -q data.json
 
 positional arguments:
-  config                if single argument: combine all lines, if multiple arguments: combine
-                        lines from all files
+  config                if single argument: combine all lines, if multiple arguments: combine lines from all files
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -29,8 +27,9 @@ optional arguments:
   -v, --verbose         Increase verbosity
   -o OUTPUT, --output OUTPUT
                         Output CSV File
-  -c, --resume          Resume an audit that was already started. Automatic items are re-
-                        checked but manually set values are retrieved from cache.
+  -l LEVELS [LEVELS ...], --levels LEVELS [LEVELS ...]
+                        CIS levels to check. (default: 1)
+  -c, --resume          Resume an audit that was already started. Automatic items are re-checked but manually set values are retrieved from cache.
 ```
 
 The tool implements some basic caching. When a benchmark is run, the result is saved in `~/.cache/fortigate-security-auditor.json`. The config file path is used to discriminate the various banchmarks performed in the cache file.
