@@ -3,13 +3,15 @@ Tool to check a fortigate configuration with the CIS Benchmark.
 
 ## Preparing the configuration
 
-First step is to create a json file from the plain configuration extracted from the Fortigate. This uses this tool: https://github.com/ssato/fortios-xutils
-```
-fortios_xutils parse firewall.conf
-```
-This will create several files in the `out/` repository. The one which will be used is `all.json`
+Parsing is done internally with this project: https://github.com/ssato/fortios-xutils
 
-**Note:** The parsing may fail if the configuration file is not indented (which is the case when exported from a Fortimanager). The problem comes from an underlying library used by fortiois_xutils. See this pull request for a fix: https://github.com/ssato/python-anyconfig-fortios-backend/pull/2
+It shall be installed with `pip install fortios_xutils`.
+
+**Note 1:** The parsing may fail if the configuration file is not indented (which is the case when exported from a Fortimanager). The problem comes from an underlying library used by fortiois_xutils. See this pull request for a fix: https://github.com/ssato/python-anyconfig-fortios-backend/pull/2
+
+**Note 2:** The parsing may fail if the hostname is not defined. See this pull request for a fix: https://github.com/ssato/fortios-xutils/pull/2
+
+**Note 3:** The parsing may fail if the config contains non utf-8 characters. A quick fix is to remove them with `iconv -f utf-8 -t utf-8 -c FILE.txt -o NEW_FILE.txt`
 
 ## Running the benchmark
 
@@ -19,7 +21,7 @@ usage: fortigate-security-auditor.py [-h] [-q] [-v] [-o OUTPUT] [-l LEVELS [LEVE
 Apply a benchmark to a Fortigate configuration file. Example: fortigate-security-auditor.py -q data.json
 
 positional arguments:
-  config                if single argument: combine all lines, if multiple arguments: combine lines from all files
+  config                Configuration file exported from the fortigate or fortimanager
 
 optional arguments:
   -h, --help            show this help message and exit

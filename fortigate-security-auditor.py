@@ -4,7 +4,7 @@ import checks
 import argparse
 from pathlib import Path
 from json import JSONDecodeError
-
+import fortios_xutils.parser
 
 parser = argparse.ArgumentParser(description='Apply a benchmark to a Fortigate configuration file. \
         Example: fortigate-security-auditor.py -q data.json')
@@ -14,7 +14,7 @@ parser.add_argument('-o', '--output', help='Output CSV File')
 parser.add_argument('-l', '--levels', help='CIS levels to check. (default: 1)', nargs='+', default="1")
 parser.add_argument('-i', '--ids', help='CIS checks id to perform. (default: all if applicable)', nargs='+', default=None)
 parser.add_argument('-c', '--resume', help='Resume an audit that was already started. Automatic items are re-checked but manually set values are retrieved from cache.', action='store_true')
-parser.add_argument('config', help='if single argument: combine all lines, if multiple arguments: combine lines from all files', nargs=1)
+parser.add_argument('config', help='Configuration file exported from the fortigate or fortimanager', nargs=1)
 args = parser.parse_args()
 
 filepath = args.config[0]
@@ -41,11 +41,12 @@ except JSONDecodeError as e:
     cached_results = {}
 
 # Load fortigate configuration file
-f = open(filepath)
-config = json.load(f)["configs"]
-f.close()
+print(f'[+] Configuration file: {filepath}')
 
-print(f'[+] Config file opened: {filepath}')
+parsed_output = fortios_xutils.parser.parse_show_config_and_dump(filepath, "tmp")
+config = parsed_output[1]["configs"]
+
+print(f'[+] Configuration succesfully parsed')
 
 print(f'[+] Starting checks for levels: {",".join(args.levels)}')
 
