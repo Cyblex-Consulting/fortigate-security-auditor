@@ -40,5 +40,3 @@ class Check_2_5_2(Checker):
         else:
             self.set_message("Manually set to compliant")
             return True
-
-        return True
