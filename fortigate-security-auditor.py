@@ -49,6 +49,9 @@ print(f'[+] Config file opened: {filepath}')
 
 print(f'[+] Starting checks for levels: {",".join(args.levels)}')
 
+if args.ids is not None:
+    print(f'[+] Limiting to checks {", ".join(args.ids)}')
+
 performed_checks = []
 
 # Instantiate checkers
