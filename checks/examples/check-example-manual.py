@@ -2,9 +2,9 @@ from checker import Checker
 
 class Check_Example_Manual(Checker):
 
-    def __init__(self, config, verbose=False):
+    def __init__(self, firewall, display, verbose=False):
         
-        super().__init__(config, verbose)
+        super().__init__(firewall, display, verbose)
 
         self.id = "1.1.1"
         self.title = "Example Manual Check"
@@ -16,10 +16,9 @@ class Check_Example_Manual(Checker):
     def do_check(self):
         config = self.get_config("system auto-install")
 
-        question = "Test Step\n\n"
-        question += "Is it ok? (Y/n)"
+        self.add_question_context("Test Step")
 
-        answer = self.ask(question)
+        answer = self.ask("Is it ok? (Y/n)")
 
         if answer == 'n' or answer == 'N':
             self.set_message("Manually set to not compliant")

@@ -2,9 +2,9 @@ from checker import Checker
 
 class Check_CIS_3_5(Checker):
 
-    def __init__(self, config, verbose=False):
+    def __init__(self, firewall, display, verbose=False):
         
-        super().__init__(config, verbose)
+        super().__init__(firewall, display, verbose)
 
         self.id = "3.5"
         self.title = "Ensure firewall policy denying all traffic to/from Tor or malicious server IP addresses using ISDB"

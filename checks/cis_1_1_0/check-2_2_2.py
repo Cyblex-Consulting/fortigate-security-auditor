@@ -2,9 +2,9 @@ from checker import Checker
 
 class Check_CIS_2_2_2(Checker):
 
-    def __init__(self, config, verbose=False):
+    def __init__(self, firewall, display, verbose=False):
         
-        super().__init__(config, verbose)
+        super().__init__(firewall, display, verbose)
 
         self.id = "2.2.2"
         self.title = "Ensure administrator password retries and lockout time are configured"

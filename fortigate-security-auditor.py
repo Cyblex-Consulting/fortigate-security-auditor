@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import json
 import checks
+import firewall
+import display
 import argparse
 from pathlib import Path
 from json import JSONDecodeError
@@ -15,6 +17,7 @@ parser.add_argument('-o', '--output', help='Output CSV File')
 parser.add_argument('-l', '--levels', help='Levels to check. (default: 1)', nargs='+', default="1")
 parser.add_argument('-i', '--ids', help='Checks id to perform. (default: all if applicable)', nargs='+', default=None)
 parser.add_argument('-c', '--resume', help='Resume an audit that was already started. Automatic items are re-checked but manually set values are retrieved from cache.', action='store_true')
+parser.add_argument('-w', '--wan', help='List of wan interfaces separated by spaces (example: --wan port1 port2)', nargs='+', default=None)
 parser.add_argument('config', help='Configuration file exported from the fortigate or fortimanager', nargs=1)
 args = parser.parse_args()
 
@@ -59,10 +62,19 @@ print(f'[+] Starting checks for levels: {",".join(args.levels)}')
 if args.ids is not None:
     print(f'[+] Limiting to checks {", ".join(args.ids)}')
 
-performed_checks = []
+# Display object
+display = display.Display()
+
+# Firewall object
+firewall = firewall.Firewall(config, display)
+if args.wan is not None:
+    print(f'[+] Configuring WAN interfaces: {", ".join(args.wan)}')
+    firewall.set_wan_interfaces(args.wan)
 
 # Instantiate checkers
-checkers = [check_class(config, verbose) for check_class in checks.classes()]
+performed_checks = []
+
+checkers = [check_class(firewall, display, verbose) for check_class in checks.classes()]
 for checker in checkers:
     if not checker.is_valid():
         continue

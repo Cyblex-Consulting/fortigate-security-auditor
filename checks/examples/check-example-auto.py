@@ -2,9 +2,9 @@ from checker import Checker
 
 class Check_Example_Manual(Checker):
 
-    def __init__(self, config, verbose=False):
-        
-        super().__init__(config, verbose)
+    def __init__(self, firewall, display, verbose=False):
+
+        super().__init__(firewall, display, verbose)
 
         self.id = "1.1.2"
         self.title = "Example Auto Check"

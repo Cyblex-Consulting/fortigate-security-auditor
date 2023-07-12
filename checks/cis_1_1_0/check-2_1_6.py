@@ -2,9 +2,9 @@ from checker import Checker
 
 class Check_CIS_2_1_6(Checker):
 
-    def __init__(self, config, verbose=False):
+    def __init__(self, firewall, display, verbose=False):
         
-        super().__init__(config, verbose)
+        super().__init__(firewall, display, verbose)
 
         self.id = "2.1.6"
         self.title = "Ensure the latest firmware is installed"
@@ -21,10 +21,9 @@ class Check_CIS_2_1_6(Checker):
                 config_system_status = block
                 break
 
-        question = f'Reported firmware is {config_system_status["config-version"]}.\nGo to https://docs.fortinet.com/upgrade-tool and check that if is the latest version.\n\n'
-        question += "Is it the latest version and is it still supported? (Y/n)"
-
-        answer = self.ask(question)
+        self.add_question_context(f'Reported firmware is {config_system_status["config-version"]}.')
+        self.add_question_context(f'Go to https://docs.fortinet.com/upgrade-tool and check that if is the latest version.')
+        answer=self.ask("Is it the latest version and is it still supported? (Y/n)")
 
         if answer == 'n' or answer == 'N':
             self.set_message("Manually set to not compliant")

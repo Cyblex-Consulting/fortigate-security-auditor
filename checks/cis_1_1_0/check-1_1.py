@@ -2,9 +2,9 @@ from checker import Checker
 
 class Check_CIS_1_1(Checker):
 
-    def __init__(self, config, verbose=False):
+    def __init__(self, firewall, display, verbose=False):
         
-        super().__init__(config, verbose)
+        super().__init__(firewall, display, verbose)
 
         self.id = "1.1"
         self.title = "Ensure DNS server is configured"
@@ -12,7 +12,7 @@ class Check_CIS_1_1(Checker):
         self.auto = True
         self.benchmark_version = "v1.1.0"
         self.benchmark_author = "CIS"
-
+        
     def do_check(self):
         config_system_dns = self.get_config("system dns")
 

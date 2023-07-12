@@ -2,9 +2,9 @@ from checker import Checker
 
 class Check_CIS_3_1(Checker):
 
-    def __init__(self, config, verbose=False):
+    def __init__(self, firewall, display, verbose=False):
         
-        super().__init__(config, verbose)
+        super().__init__(firewall, display, verbose)
 
         self.id = "3.1"
         self.title = "Ensure that unused policies are reviewed regularly"
@@ -17,10 +17,9 @@ class Check_CIS_3_1(Checker):
 
     def do_check(self):
 
-        question = 'Unused policy shall be checked manually by resetting the counters and then checking which rule never matched.'
-        question += 'Was that performed and the result was satisfactory? (Y/n)'
+        self.add_question_context('Unused policy shall be checked manually by resetting the counters and then checking which rule never matched.')
         
-        answer = self.ask(question)
+        answer = self.ask('Was that performed and the result was satisfactory? (Y/n)')
         if answer == 'n' or answer == 'N':
             self.set_message("Manually set to not compliant")
             return False

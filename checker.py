@@ -2,8 +2,9 @@ import re
 
 class Checker:
 
-    def __init__(self, config, verbose=False):
-        self.config = config
+    def __init__(self, firewall, display, verbose=False):
+        self.firewall = firewall
+        self.display = display
         self.verbose = verbose
         self.message = None
         self.manual_entry = False
@@ -11,6 +12,7 @@ class Checker:
         self.enabled = True
         self.levels = None
         self.benchmark_author = None
+        self.question_context = None
         self.question = None
 
     def __lt__(self, other):
@@ -47,14 +49,15 @@ class Checker:
         self.result = cached_result["result"]
         self.message = cached_result["message"]
         self.question = cached_result["question"]
+        self.question_context = cached_result["question_context"]
         print(f'[{self.get_id()}] {self.title}', end='')
         print(f' : {self.result}')
+        if self.verbose and self.question_context is not None:
+            self.display.print(self.question_context)
         if self.verbose and self.question is not None:
-            for line in self.question:
-                print('\t| ' + line)
+            self.display.print(self.question)
         if self.verbose and self.message is not None:
-            for line in self.message:
-                print('\t| ' + line)
+            self.display.print(self.message)
 
     def skip(self):
         print(f'[{self.get_id()}] {self.title} : SKIP')
@@ -67,32 +70,39 @@ class Checker:
 
         print(f'[{self.get_id()}] {self.title}', end='')
         self.success = self.do_check()
-
+        
         if self.success is None:
             self.result = 'UNDF'
         else:
-            if self.manual_entry:
-                print(f'[{self.get_id()}] {self.title}', end='')
-
             if self.success:
                 self.result = 'PASS'
             else:
                 self.result = 'FAIL'
-        print(f' : {self.result}')
 
-        if self.verbose and self.message is not None:
-            for line in self.message:
-                print('\t| ' + line)
+        if self.manual_entry:
+            if self.verbose and self.message is not None:
+                self.display.show(self.message)
+                    
+            print(f'[{self.get_id()}] {self.title} : {self.result}')
+        else:
+            print(f' : {self.result}')
+            if self.verbose and self.message is not None:
+                self.display.show(self.message)
+
+    # Handle manual questions
+    def set_question_context(self, question_context):
+        self.question_context = [question_context]
+
+    def add_question_context(self, question_context):
+        if self.question_context is None:
+            self.question_context = []
+        self.question_context.append(question_context)
 
     def ask(self, question):
         self.manual_entry = True
-        self.question = [question]
-        print('\n\t| --------------[ Question ] --------------------')
-        print('\t| ' + question.replace("\n", "\n\t| ") + ":", end = '')
-        answer = input()
-        print('\t| -----------------------------------------------')
-        return answer
+        return self.display.ask(self.question_context, question)
 
+    # Handle result display
     def set_message(self, message):
         self.message = [message]
 
@@ -100,7 +110,8 @@ class Checker:
         if self.message is None:
             self.message = []
         self.message.append(message)
-
+    
+    # Internal helpers
     def get_id(self):
         return self.id
 
@@ -124,13 +135,7 @@ class Checker:
 
     # Helper function to get the correct config bloc in config dict
     def get_config(self, chapter=None):
-        if chapter is None:
-            return self.config
-        else:
-            for block in self.config:
-                if "config" in block.keys() and block["config"] == chapter:
-                    return block
-            return None
+        return self.firewall.get_config(chapter)
 
     # Helper function to check if param is an IP
     def is_ip(self, param):
@@ -145,3 +150,7 @@ class Checker:
             return True
         else:
             return False
+
+    # Helper to return WAN interfaces
+    def get_wan_interfaces(self):
+        return self.firewall.get_wan_interfaces()

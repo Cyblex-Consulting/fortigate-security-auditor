@@ -2,9 +2,9 @@ from checker import Checker
 
 class Check_CIS_2_4_5(Checker):
 
-    def __init__(self, config, verbose=False):
+    def __init__(self, firewall, display, verbose=False):
         
-        super().__init__(config, verbose)
+        super().__init__(firewall, display, verbose)
 
         self.id = "2.4.5"
         self.title = "Ensure only encrypted access channels are enabled"
@@ -16,7 +16,7 @@ class Check_CIS_2_4_5(Checker):
 
     def do_check(self):
         config_system_interface = self.get_config("system interface")
-        interfaces = config_system_interface["edits"]
+        interfaces = self.firewall.get_interfaces()
 
         fail = False
         for interface in interfaces:
@@ -25,7 +25,6 @@ class Check_CIS_2_4_5(Checker):
                 allowaccess = interface["allowaccess"]
                 if not isinstance(allowaccess, list):
                     allowaccess = [allowaccess]
-                #print(allowaccess)
                 if "http" in allowaccess or "telnet" in allowaccess:
                     fail = True
                 self.add_message(f'{name}: set allowaccess {" ".join(allowaccess)}')

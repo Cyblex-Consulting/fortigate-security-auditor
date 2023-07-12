@@ -2,9 +2,9 @@ from checker import Checker
 
 class Check_CIS_2_4_4(Checker):
 
-    def __init__(self, config, verbose=False):
+    def __init__(self, firewall, display, verbose=False):
         
-        super().__init__(config, verbose)
+        super().__init__(firewall, display, verbose)
 
         self.id = "2.4.4"
         self.title = "Ensure idle timeout time is configured"

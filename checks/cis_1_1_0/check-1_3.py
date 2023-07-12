@@ -2,10 +2,10 @@ from checker import Checker
 
 class Check_CIS_1_3(Checker):
 
-    def __init__(self, config, verbose=False):
+    def __init__(self, firewall, display, verbose=False):
         
-        super().__init__(config, verbose)
-
+        super().__init__(firewall, display, verbose)
+        
         self.id = "1.3"
         self.title = "Disable all management related services on WAN port"
         self.levels = [1]
@@ -14,19 +14,15 @@ class Check_CIS_1_3(Checker):
         self.benchmark_author = "CIS"
 
     def do_check(self):
-        config_system_interface = self.get_config("system interface")
-        interfaces = config_system_interface["edits"]
+        wan_interfaces = self.firewall.get_wan_interfaces()
 
-        question = 'Identify WAN interface and validate that "set allowaccess" does not have ping, https, http, ssh, snmp or radius-acct configured.\n\n'
-        question += "The following interfaces have allowaccess not empty:\n\n"
-        for interface in interfaces:
+        self.add_question_context("The following WAN interfaces have allowaccess not empty:")
+        for interface in wan_interfaces:
             name = interface["edit"]
             if "allowaccess" in interface.keys():
                 allowaccess = interface["allowaccess"]
-                question += f'{name}: {allowaccess}\n'
-        question += "\nDoes it seems adequate? (Y/n)"
-
-        answer = self.ask(question)
+                self.add_question_context(f'{name}: {allowaccess}')
+        answer = self.ask("Does it seems adequate? (Y/n)")
         
         if answer == 'n' or answer == 'N':
             self.set_message("Manually set to not compliant")

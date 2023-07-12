@@ -2,9 +2,9 @@ from checker import Checker
 
 class Check_CIS_2_1_1(Checker):
 
-    def __init__(self, config, verbose=False):
+    def __init__(self, firewall, display, verbose=False):
         
-        super().__init__(config, verbose)
+        super().__init__(firewall, display, verbose)
 
         self.id = "2.1.1"
         self.title = "Ensure 'Pre-Login Banner' is set"
