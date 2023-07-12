@@ -1,6 +1,6 @@
 from checker import Checker
 
-class Check_2_4_1(Checker):
+class Check_CIS_2_4_1(Checker):
 
     def __init__(self, config, verbose=False):
         
@@ -10,7 +10,10 @@ class Check_2_4_1(Checker):
         self.title = "Ensure default 'admin' password is changed"
         self.levels = [1]
         self.auto = False
-        self.enabled = True # Remove this line to enable
+        self.enabled = True
+        self.benchmark_version = "v1.1.0"
+        self.benchmark_author = "CIS"
+
 
     def do_check(self):
         config_system_admin = self.get_config("system admin")

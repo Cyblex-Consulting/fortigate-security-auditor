@@ -1,6 +1,6 @@
 from checker import Checker
 
-class Check_3_3(Checker):
+class Check_CIS_3_3(Checker):
 
     def __init__(self, config, verbose=False):
         
@@ -10,7 +10,10 @@ class Check_3_3(Checker):
         self.title = "Ensure Policies are Uniquely Named"
         self.levels = [2]
         self.auto = True
+        self.enabled = True
         self.benchmark_version = "v1.1.0"
+        self.benchmark_author = "CIS"
+
 
     def do_check(self):
         config_firewall_policy = self.get_config("firewall policy")

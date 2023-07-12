@@ -10,6 +10,7 @@ class Checker:
         self.auto = True
         self.enabled = True
         self.levels = None
+        self.benchmark_author = None
 
     def __lt__(self, other):
         return self.id < other.id
@@ -24,6 +25,9 @@ class Checker:
             return False
         if self.levels is None or len(self.levels) == 0:
             print(f'[!] Error in {self.__class__.__name__}: Levels are not defined')
+            return False
+        if self.benchmark_author is None or len(self.benchmark_author) == 0:
+            print(f'[!] Error in {self.__class__.__name__}: Benchmark author is not defined')
             return False
 
         return True
@@ -41,14 +45,14 @@ class Checker:
     def restore_from_cache(self, cached_result):
         self.result = cached_result["result"]
         self.message = cached_result["message"]
-        print(f'[{self.id}] {self.title}', end='')
+        print(f'[{self.get_id()}] {self.title}', end='')
         print(f' : {self.result}')
         if self.verbose and self.message is not None:
             for line in self.message:
                 print('\t| ' + line)
 
     def skip(self):
-        print(f'[{self.id}] {self.title} : SKIP')
+        print(f'[{self.get_id()}] {self.title} : SKIP')
         self.result = 'SKIP'
 
     def run(self):
@@ -56,14 +60,14 @@ class Checker:
         if not self.is_valid():
             return False
 
-        print(f'[{self.id}] {self.title}', end='')
+        print(f'[{self.get_id()}] {self.title}', end='')
         self.success = self.do_check()
 
         if self.success is None:
             self.result = 'UNDF'
         else:
             if self.manual_entry:
-                print(f'[{self.id}] {self.title}', end='')
+                print(f'[{self.get_id()}] {self.title}', end='')
 
             if self.success:
                 self.result = 'PASS'
@@ -99,6 +103,9 @@ class Checker:
     
     def get_title(self):
         return self.title
+    
+    def get_id(self):
+        return f'{self.benchmark_author}-{self.id}'
 
     # Helper function to get the correct config bloc in config dict
     def get_config(self, chapter=None):

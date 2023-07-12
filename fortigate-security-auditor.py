@@ -10,9 +10,10 @@ parser = argparse.ArgumentParser(description='Apply a benchmark to a Fortigate c
         Example: fortigate-security-auditor.py -q data.json')
 parser.add_argument('-q', '--quiet', help='Not interactive: ignore manual steps', action='store_true')
 parser.add_argument('-v', '--verbose', help='Increase verbosity', action='store_true')
+parser.add_argument('-j', '--json', help='Input file is json already parsed by fortios_xutils', action='store_true')
 parser.add_argument('-o', '--output', help='Output CSV File')
-parser.add_argument('-l', '--levels', help='CIS levels to check. (default: 1)', nargs='+', default="1")
-parser.add_argument('-i', '--ids', help='CIS checks id to perform. (default: all if applicable)', nargs='+', default=None)
+parser.add_argument('-l', '--levels', help='Levels to check. (default: 1)', nargs='+', default="1")
+parser.add_argument('-i', '--ids', help='Checks id to perform. (default: all if applicable)', nargs='+', default=None)
 parser.add_argument('-c', '--resume', help='Resume an audit that was already started. Automatic items are re-checked but manually set values are retrieved from cache.', action='store_true')
 parser.add_argument('config', help='Configuration file exported from the fortigate or fortimanager', nargs=1)
 args = parser.parse_args()
@@ -43,10 +44,15 @@ except JSONDecodeError as e:
 # Load fortigate configuration file
 print(f'[+] Configuration file: {filepath}')
 
-parsed_output = fortios_xutils.parser.parse_show_config_and_dump(filepath, "tmp")
-config = parsed_output[1]["configs"]
-
-print(f'[+] Configuration succesfully parsed')
+if args.json:
+    f = open(filepath)
+    config = json.load(f)["configs"]
+    f.close()
+    print(f'[+] Configuration loaded from JSON file')
+else:
+    parsed_output = fortios_xutils.parser.parse_show_config_and_dump(filepath, "tmp")
+    config = parsed_output[1]["configs"]
+    print(f'[+] Configuration succesfully parsed')
 
 print(f'[+] Starting checks for levels: {",".join(args.levels)}')
 
@@ -57,12 +63,11 @@ performed_checks = []
 
 # Instantiate checkers
 checkers = [check_class(config, verbose) for check_class in checks.classes()]
-checkers.sort()
 for checker in checkers:
     if not checker.is_valid():
         continue
 
-    if args.ids is not None and checker.id not in args.ids:
+    if args.ids is not None and checker.get_id() not in args.ids:
         continue
 
     if checker.enabled and checker.is_level_applicable(args.levels):       
@@ -75,7 +80,7 @@ for checker in checkers:
                 if args.resume:
                     if checker.id in cached_results.keys():
                         # There is a cached result for this check
-                        checker.restore_from_cache(cached_results[checker.id])
+                        checker.restore_from_cache(cached_results[checker.get_id()])
                     else:
                         # There is no cached result, we have to perform the step
                         checker.run()
@@ -84,14 +89,14 @@ for checker in checkers:
         performed_checks.append(checker)
 
         # Save to cache
-        cached_results[checker.id] = {"result": checker.result, "message": checker.message}
+        cached_results[checker.get_id()] = {"result": checker.result, "message": checker.message}
 
 print('[+] Finished')
 print('------------------------------------------------')
 print('[+] Here is a summary:')
 
 for performed_check in performed_checks:
-    print(f'[{performed_check.id}]\t[{performed_check.result}]\t{performed_check.title}')
+    print(f'[{performed_check.get_id()}]\t[{performed_check.result}]\t{performed_check.title}')
 
 # Save cache file
 cache[filepath] = cached_results
@@ -105,7 +110,7 @@ if outputfile is not None:
     print('[+] Exporting results in CSV')
     outputfile = open(outputfile,"w+")
     for performed_check in performed_checks:
-        line = f'{performed_check.id},{performed_check.result},{performed_check.title}\n'
+        line = f'{performed_check.get_id()},{performed_check.result},{performed_check.title}\n'
         outputfile.write(line)
     outputfile.close()
     print('[+] Finished')

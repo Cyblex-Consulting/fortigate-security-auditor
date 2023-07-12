@@ -1,6 +1,6 @@
 from checker import Checker
 
-class Check_1_1(Checker):
+class Check_CIS_1_1(Checker):
 
     def __init__(self, config, verbose=False):
         
@@ -11,6 +11,7 @@ class Check_1_1(Checker):
         self.levels = [1]
         self.auto = True
         self.benchmark_version = "v1.1.0"
+        self.benchmark_author = "CIS"
 
     def do_check(self):
         config_system_dns = self.get_config("system dns")

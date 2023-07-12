@@ -1,8 +1,7 @@
 # Specific for the project
 tmp/*
-out/*
-*.conf
-*.txt
+confs/*
+output/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,6 +1,6 @@
 from checker import Checker
 
-class Check_2_3_2(Checker):
+class Check_CIS_2_3_2(Checker):
 
     def __init__(self, config, verbose=False):
         
@@ -11,6 +11,9 @@ class Check_2_3_2(Checker):
         self.levels = [2]
         self.auto = True
         self.enabled = True
+        self.benchmark_version = "v1.1.0"
+        self.benchmark_author = "CIS"
+
 
     def do_check(self):
         config_system_snmp_sysinfo = self.get_config("system snmp sysinfo")

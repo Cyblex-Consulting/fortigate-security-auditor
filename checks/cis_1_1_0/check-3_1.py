@@ -1,6 +1,6 @@
 from checker import Checker
 
-class Check_3_1(Checker):
+class Check_CIS_3_1(Checker):
 
     def __init__(self, config, verbose=False):
         
@@ -10,8 +10,10 @@ class Check_3_1(Checker):
         self.title = "Ensure that unused policies are reviewed regularly"
         self.levels = [2]
         self.auto = False
-        self.benchmark_version = "v1.1.0"
         self.enabled = True
+        self.benchmark_version = "v1.1.0"
+        self.benchmark_author = "CIS"
+
 
     def do_check(self):
 

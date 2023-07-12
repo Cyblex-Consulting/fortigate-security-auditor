@@ -11,6 +11,7 @@ class Check_Example_Manual(Checker):
         self.levels = [1, 2]
         self.auto = True
         self.enabled = False # Remove this line to enable
+        self.benchmark_author = "Example Org."
 
     def do_check(self):
         config_system_dns = self.get_config("system dns")

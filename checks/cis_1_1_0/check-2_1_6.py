@@ -1,6 +1,6 @@
 from checker import Checker
 
-class Check_2_1_6(Checker):
+class Check_CIS_2_1_6(Checker):
 
     def __init__(self, config, verbose=False):
         
@@ -11,6 +11,7 @@ class Check_2_1_6(Checker):
         self.levels = [2]
         self.auto = False
         self.benchmark_version = "v1.1.0"
+        self.benchmark_author = "CIS"
 
     def do_check(self):
         config = self.get_config()

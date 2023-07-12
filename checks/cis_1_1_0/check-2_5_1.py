@@ -1,6 +1,6 @@
 from checker import Checker
 
-class Check_2_5_1(Checker):
+class Check_CIS_2_5_1(Checker):
 
     def __init__(self, config, verbose=False):
         
@@ -10,7 +10,10 @@ class Check_2_5_1(Checker):
         self.title = "Ensure High Availability Configuration"
         self.levels = [2]
         self.auto = True
+        self.enabled = True
         self.benchmark_version = "v1.1.0"
+        self.benchmark_author = "CIS"
+
 
     def do_check(self):
         config_system_ha = self.get_config("system ha")
