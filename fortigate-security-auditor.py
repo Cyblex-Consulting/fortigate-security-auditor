@@ -89,7 +89,7 @@ for checker in checkers:
         performed_checks.append(checker)
 
         # Save to cache
-        cached_results[checker.get_id()] = {"result": checker.result, "message": checker.message}
+        cached_results[checker.get_id()] = {"result": checker.result, "message": checker.message, "question": checker.question}
 
 print('[+] Finished')
 print('------------------------------------------------')
@@ -107,10 +107,11 @@ cache_file.close()
 # Export
 if outputfile is not None:
     print('------------------------------------------------')
-    print('[+] Exporting results in CSV')
+    print(f'[+] Exporting results in {outputfile}')
     outputfile = open(outputfile,"w+")
     for performed_check in performed_checks:
-        line = f'{performed_check.get_id()},{performed_check.result},{performed_check.title}\n'
+        cleaned_message = performed_check.get_log().replace('"', '\'')
+        line = f'{performed_check.get_id()},{performed_check.result},{performed_check.title},"{cleaned_message}"\n'
         outputfile.write(line)
     outputfile.close()
     print('[+] Finished')

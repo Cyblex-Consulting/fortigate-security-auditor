@@ -11,6 +11,7 @@ class Checker:
         self.enabled = True
         self.levels = None
         self.benchmark_author = None
+        self.question = None
 
     def __lt__(self, other):
         return self.id < other.id
@@ -45,8 +46,12 @@ class Checker:
     def restore_from_cache(self, cached_result):
         self.result = cached_result["result"]
         self.message = cached_result["message"]
+        self.question = cached_result["question"]
         print(f'[{self.get_id()}] {self.title}', end='')
         print(f' : {self.result}')
+        if self.verbose and self.question is not None:
+            for line in self.question:
+                print('\t| ' + line)
         if self.verbose and self.message is not None:
             for line in self.message:
                 print('\t| ' + line)
@@ -81,6 +86,7 @@ class Checker:
 
     def ask(self, question):
         self.manual_entry = True
+        self.question = [question]
         print('\n\t| --------------[ Question ] --------------------')
         print('\t| ' + question.replace("\n", "\n\t| ") + ":", end = '')
         answer = input()
@@ -106,6 +112,15 @@ class Checker:
     
     def get_id(self):
         return f'{self.benchmark_author}-{self.id}'
+    
+    def get_log(self):
+        if self.question is not None:
+            log = "\n".join(self.question)
+            log += "\n"
+            log += "\n".join(self.message)
+        else:
+            log = "\n".join(self.message)
+        return log
 
     # Helper function to get the correct config bloc in config dict
     def get_config(self, chapter=None):
