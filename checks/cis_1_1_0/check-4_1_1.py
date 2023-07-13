@@ -16,7 +16,6 @@ class Check_CIS_4_1_1(Checker):
     def do_check(self):
         wan_interfaces = self.firewall.get_wan_interfaces()
         wan_policies = self.firewall.get_policies(dstintfs=wan_interfaces, actions=["accept"])
-        ips_sensors = self.firewall.get_ips_sensors()
         
         fail = False
         for policy in wan_policies:
