@@ -22,6 +22,11 @@ class Check_CIS_2_1_6(Checker):
                 break
 
         self.add_question_context(f'Reported firmware is {config_system_status["config-version"]}.')
+        
+        if "platform" in config_system_status.keys():
+            # In fortimanager export, this is present but not in direct export
+            self.add_question_context(f'Reported model is {config_system_status["platform"]}.')
+            
         self.add_question_context(f'Go to https://docs.fortinet.com/upgrade-tool and check that if is the latest version.')
         answer=self.ask("Is it the latest version and is it still supported? (Y/n)")
 
