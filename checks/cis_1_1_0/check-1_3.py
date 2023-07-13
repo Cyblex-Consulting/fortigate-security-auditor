@@ -16,17 +16,14 @@ class Check_CIS_1_3(Checker):
     def do_check(self):
         wan_interfaces = self.firewall.get_wan_interfaces()
 
-        self.add_question_context("The following WAN interfaces have allowaccess not empty:")
+        fail = False
         for interface in wan_interfaces:
             name = interface["edit"]
             if "allowaccess" in interface.keys():
-                allowaccess = interface["allowaccess"]
-                self.add_question_context(f'{name}: {allowaccess}')
-        answer = self.ask("Does it seems adequate? (Y/n)")
-        
-        if answer == 'n' or answer == 'N':
-            self.set_message("Manually set to not compliant")
-            return False
-        else:
-            self.set_message("Manually set to compliant")
-            return True
+                allowaccess_list = interface["allowaccess"]
+                for allowaccess in allowaccess_list:
+                    if allowaccess in ["ping", "https", "ssh", "snmp", "http", "radius-acct"]:
+                        self.add_message(f'{allowaccess} allowed for interface {name}')
+                        fail = True
+
+        return not fail
