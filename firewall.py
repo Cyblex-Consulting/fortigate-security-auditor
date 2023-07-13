@@ -4,8 +4,98 @@ class Firewall:
         self.config = config
         self.wan_interfaces = None
         self.display = display
+        self.all_timezones = {
+            "01":"(GMT-11:00) Midway Island, Samoa",
+            "02":"(GMT-10:00) Hawaii",
+            "03":"(GMT-9:00) Alaska",
+            "04":"(GMT-8:00) Pacific Time (US & Canada)",
+            "05":"(GMT-7:00) Arizona",
+            "81":"(GMT-7:00) Baja California Sur, Chihuahua",
+            "06":"(GMT-7:00) Mountain Time (US & Canada)",
+            "07":"(GMT-6:00) Central America",
+            "08":"(GMT-6:00) Central Time (US & Canada)",
+            "09":"(GMT-6:00) Mexico City",
+            "10":"(GMT-6:00) Saskatchewan",
+            "11":"(GMT-5:00) Bogota, Lima,Quito",
+            "12":"(GMT-5:00) Eastern Time (US & Canada)",
+            "13":"(GMT-5:00) Indiana (East)",
+            "74":"(GMT-4:00) Caracas",
+            "14":"(GMT-4:00) Atlantic Time (Canada)",
+            "77":"(GMT-4:00) Georgetown",
+            "15":"(GMT-4:00) La Paz",
+            "87":"(GMT-4:00) Paraguay",
+            "16":"(GMT-3:00) Santiago",
+            "17":"(GMT-3:30) Newfoundland",
+            "18":"(GMT-3:00) Brasilia",
+            "19":"(GMT-3:00) Buenos Aires",
+            "20":"(GMT-3:00) Nuuk (Greenland)",
+            "75":"(GMT-3:00) Uruguay",
+            "21":"(GMT-2:00) Mid-Atlantic",
+            "22":"(GMT-1:00) Azores",
+            "23":"(GMT-1:00) Cape Verde Is.",
+            "24":"(GMT) Monrovia",
+            "80":"(GMT) Greenwich Mean Time",
+            "79":"(GMT) Casablanca",
+            "25":"(GMT) Dublin, Edinburgh, Lisbon, London, Canary Is.",
+            "26":"(GMT+1:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna",
+            "27":"(GMT+1:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague",
+            "28":"(GMT+1:00) Brussels, Copenhagen, Madrid, Paris",
+            "78":"(GMT+1:00) Namibia",
+            "29":"(GMT+1:00) Sarajevo, Skopje, Warsaw, Zagreb",
+            "30":"(GMT+1:00) West Central Africa",
+            "31":"(GMT+2:00) Athens, Sofia, Vilnius",
+            "32":"(GMT+2:00) Bucharest",
+            "33":"(GMT+2:00) Cairo",
+            "34":"(GMT+2:00) Harare, Pretoria",
+            "35":"(GMT+2:00) Helsinki, Riga, Tallinn",
+            "36":"(GMT+2:00) Jerusalem",
+            "37":"(GMT+3:00) Baghdad",
+            "38":"(GMT+3:00) Kuwait, Riyadh",
+            "83":"(GMT+3:00) Moscow",
+            "84":"(GMT+3:00) Minsk",
+            "40":"(GMT+3:00) Nairobi",
+            "85":"(GMT+3:00) Istanbul",
+            "41":"(GMT+3:30) Tehran",
+            "42":"(GMT+4:00) Abu Dhabi, Muscat",
+            "43":"(GMT+4:00) Baku",
+            "39":"(GMT+3:00) St. Petersburg, Volgograd",
+            "44":"(GMT+4:30) Kabul",
+            "46":"(GMT+5:00) Islamabad, Karachi, Tashkent",
+            "47":"(GMT+5:30) Kolkata, Chennai, Mumbai, New Delhi",
+            "51":"(GMT+5:30) Sri Jayawardenepara",
+            "48":"(GMT+5:45) Kathmandu",
+            "45":"(GMT+5:00) Ekaterinburg",
+            "49":"(GMT+6:00) Almaty, Novosibirsk",
+            "50":"(GMT+6:00) Astana, Dhaka",
+            "52":"(GMT+6:30) Rangoon",
+            "53":"(GMT+7:00) Bangkok, Hanoi, Jakarta",
+            "54":"(GMT+7:00) Krasnoyarsk",
+            "55":"(GMT+8:00) Beijing, ChongQing, HongKong, Urumgi, Irkutsk",
+            "56":"(GMT+8:00) Ulaan Bataar",
+            "57":"(GMT+8:00) Kuala Lumpur, Singapore",
+            "58":"(GMT+8:00) Perth",
+            "59":"(GMT+8:00) Taipei",
+            "60":"(GMT+9:00) Osaka, Sapporo, Tokyo, Seoul",
+            "62":"(GMT+9:30) Adelaide",
+            "63":"(GMT+9:30) Darwin",
+            "61":"(GMT+9:00) Yakutsk",
+            "64":"(GMT+10:00) Brisbane",
+            "65":"(GMT+10:00) Canberra, Melbourne, Sydney",
+            "66":"(GMT+10:00) Guam, Port Moresby",
+            "67":"(GMT+10:00) Hobart",
+            "68":"(GMT+10:00) Vladivostok",
+            "69":"(GMT+10:00) Magadan",
+            "70":"(GMT+11:00) Solomon Is., New Caledonia",
+            "71":"(GMT+12:00) Auckland, Wellington",
+            "72":"(GMT+12:00) Fiji, Kamchatka, Marshall Is.",
+            "00":"(GMT+12:00) Eniwetok, Kwajalein",
+            "82":"(GMT+12:45) Chatham Islands",
+            "73":"(GMT+13:00) Nuku'alofa",
+            "86":"(GMT+13:00) Samoa",
+            "76":"(GMT+14:00) Kiritimati"
+        }
     
-    # Helper function to get the correct config bloc in config dict
+    # Returns the config bloc in config dict
     def get_config(self, chapter=None):
         if chapter is None:
             return self.config
@@ -15,11 +105,13 @@ class Firewall:
                     return block
             return None
     
+    # Returns all firewall interfaces
     def get_interfaces(self):
         config_system_interface = self.get_config("system interface")
         interfaces = config_system_interface["edits"]
         return interfaces
         
+    # Returns WAN interfaces. If unknown, prompt the user.
     def get_wan_interfaces(self):
         if self.wan_interfaces is None:
             question_context = []
@@ -34,6 +126,7 @@ class Firewall:
         
         return self.wan_interfaces
     
+    # Configures interfaces that should be considered WAN
     def set_wan_interfaces(self, interfaces_names):
         self.wan_interfaces = []
         
@@ -41,6 +134,7 @@ class Firewall:
             if interface["edit"] in interfaces_names:
                 self.wan_interfaces.append(interface)
                 
+    # Returns firewall policies. Allows filtering
     def get_policies(self, srcintfs=None, dstintfs=None, actions=None):
         config_firewall_policy = self.get_config("firewall policy")
         if config_firewall_policy is None:
@@ -69,6 +163,7 @@ class Firewall:
 
         return result
     
+    # Returns ips sensors. Allows filtering
     def get_ips_sensors(self, names=None):
         config_ips_sensors = self.get_config("ips sensor")
         if config_ips_sensors is None:
@@ -86,6 +181,7 @@ class Firewall:
             
         return result
     
+    # Return A/V profiles. Allows filtering
     def get_av_profiles(self, names=None):
         config_av_profiles = self.get_config("antivirus profile")
         if config_av_profiles is None:
@@ -103,6 +199,7 @@ class Firewall:
             
         return result
     
+    # Returns DNS Filter profiles. Allows filtering
     def get_dnsfilter_profiles(self, names=None):
         config_dnsfilter_profiles = self.get_config("dnsfilter profile")
         if config_dnsfilter_profiles is None:
@@ -120,6 +217,7 @@ class Firewall:
             
         return result
     
+    # Returns all service groups that includes a protocol (for instance "Windows AD" is returned when protocols = ["DNS"])
     def get_service_groups_containing_protocols(self, protocols=None):
         config_firewall_service_groups = self.get_config("firewall service group")
         if config_firewall_service_groups is None:
