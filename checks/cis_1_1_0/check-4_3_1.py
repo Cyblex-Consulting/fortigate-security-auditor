@@ -53,7 +53,7 @@ class Check_CIS_4_3_1(Checker):
                 self.add_message(f'"block-botnet" not configured in DNS filter policy "{dnsfilter_profile["edit"]}"')
                 fail = True
             elif dnsfilter_profile["block-botnet"] != "enable":
-                self.add_message(f'"block-botnet" not configured in DNS filter policy "{dnsfilter_profile["edit"]}"')
+                self.add_message(f'"block-botnet" not enabled in DNS filter policy "{dnsfilter_profile["edit"]}"')
                 fail = True
         
         if not fail:
