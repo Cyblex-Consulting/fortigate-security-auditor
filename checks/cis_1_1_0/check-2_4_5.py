@@ -15,7 +15,6 @@ class Check_CIS_2_4_5(Checker):
 
 
     def do_check(self):
-        config_system_interface = self.get_config("system interface")
         interfaces = self.firewall.get_interfaces()
 
         fail = False
