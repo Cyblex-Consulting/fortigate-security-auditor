@@ -85,3 +85,20 @@ class Firewall:
             result.append(ips_sensor)
             
         return result
+    
+    def get_av_profiles(self, names=None):
+        config_av_profiles = self.get_config("antivirus profile")
+        if config_av_profiles is None:
+            return []
+        
+        av_profiles = config_av_profiles['edits']
+        
+        result = []
+        for av_profile in av_profiles:
+            if names is not None:
+                if av_profile["edit"] not in names:
+                    continue
+            
+            result.append(av_profiles)
+            
+        return result
