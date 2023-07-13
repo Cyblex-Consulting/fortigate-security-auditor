@@ -40,3 +40,48 @@ class Firewall:
         for interface in self.get_interfaces():
             if interface["edit"] in interfaces_names:
                 self.wan_interfaces.append(interface)
+                
+    def get_policies(self, srcintfs=None, dstintfs=None, actions=None):
+        config_firewall_policy = self.get_config("firewall policy")
+        if config_firewall_policy is None:
+            return []
+        
+        policies = config_firewall_policy['edits']
+
+        result = []        
+        for policy in policies:
+            if srcintfs is not None:
+                if policy["srcintf"] not in [x["edit"] for x in srcintfs]:
+                    continue
+                
+            if dstintfs is not None:
+                if policy["dstintf"] not in [x["edit"] for x in dstintfs]:
+                    continue
+                
+            if actions is not None:
+                if "action" not in policy.keys():
+                    continue
+                
+                if policy["action"] not in actions:
+                    continue
+            
+            result.append(policy)
+
+        return result
+    
+    def get_ips_sensors(self, names=None):
+        config_ips_sensors = self.get_config("ips sensor")
+        if config_ips_sensors is None:
+            return []
+        
+        ips_sensors = config_ips_sensors['edits']
+        
+        result = []
+        for ips_sensor in ips_sensors:
+            if names is not None:
+                if ips_sensor["edit"] not in names:
+                    continue
+            
+            result.append(ips_sensor)
+            
+        return result
