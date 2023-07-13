@@ -102,3 +102,41 @@ class Firewall:
             result.append(av_profile)
             
         return result
+    
+    def get_dnsfilter_profiles(self, names=None):
+        config_dnsfilter_profiles = self.get_config("dnsfilter profile")
+        if config_dnsfilter_profiles is None:
+            return []
+        
+        dnsfilter_profiles = config_dnsfilter_profiles['edits']
+        
+        result = []
+        for dnsfilter_profile in dnsfilter_profiles:
+            if names is not None:
+                if dnsfilter_profile["edit"] not in names:
+                    continue
+            
+            result.append(dnsfilter_profile)
+            
+        return result
+    
+    def get_service_groups_containing_protocols(self, protocols=None):
+        config_firewall_service_groups = self.get_config("firewall service group")
+        if config_firewall_service_groups is None:
+            return []
+        
+        service_groups = config_firewall_service_groups["edits"]
+        
+        result = []
+        for service_group in service_groups:
+            if protocols is not None:
+                for protocol in protocols:
+                    if protocol in service_group["member"]:
+                        if not service_group["edit"] in result:
+                            result.append(service_group["edit"])
+            else:
+                result.append(service_group)
+
+        return result
+
+        
