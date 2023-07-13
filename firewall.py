@@ -99,6 +99,6 @@ class Firewall:
                 if av_profile["edit"] not in names:
                     continue
             
-            result.append(av_profiles)
+            result.append(av_profile)
             
         return result
