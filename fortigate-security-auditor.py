@@ -19,6 +19,8 @@ parser.add_argument('-l', '--levels', help='Levels to check. (default: 1)', narg
 parser.add_argument('-i', '--ids', help='Checks id to perform. (default: all if applicable)', nargs='+', default=None)
 parser.add_argument('-c', '--resume', help='Resume an audit that was already started. Automatic items are re-checked but manually set values are retrieved from cache.', action='store_true')
 parser.add_argument('-w', '--wan', help='List of wan interfaces separated by spaces (example: --wan port1 port2)', nargs='+', default=None)
+parser.add_argument('--interfaces', help='Show list of interfaces and exit', action='store_true')
+parser.add_argument('--zones', help='Show list of zones and exit', action='store_true')
 parser.add_argument('config', help='Configuration file exported from the fortigate or fortimanager', nargs=1)
 args = parser.parse_args()
 
@@ -78,6 +80,32 @@ firewall = firewall.Firewall(config, display)
 if args.wan is not None:
     print(f'[+] Configuring WAN interfaces: {", ".join(args.wan)}')
     firewall.set_wan_interfaces(args.wan)
+
+# Display interfaces
+if args.interfaces:
+    print(f'[+] The following interfaces exist on the firewall:')
+    for interface in firewall.get_interfaces():
+        print(f'[-] {interface["edit"]}')
+        if "vdom" in interface.keys() : print(f'     | vdom {interface["vdom"]}') 
+        if "type" in interface.keys() : print(f'     | type {interface["type"]}')
+        if "status" in interface.keys() : print(f'     | status {interface["status"]}')
+        if "ip" in interface.keys() : 
+            ips = ", ".join(interface["ip"])
+            print(f'     | ip {ips}')
+    exit(0)
+
+# Display interfaces
+if args.zones:
+    print(f'[+] The following zones exist on the firewall:')
+    for zone in firewall.get_zones():
+        print(f'[-] {zone["edit"]}')
+        if "interface" in zone.keys() : 
+            if isinstance(zone["interface"], list):
+                child_interfaces = ", ".join(zone["interface"])
+            else:
+                child_interfaces = zone["interface"]
+            print(f'     | interfaces {child_interfaces}')
+    exit(0)
 
 # Instantiate checkers
 performed_checks = []
