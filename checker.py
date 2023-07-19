@@ -76,7 +76,7 @@ class Checker:
         self.success = self.do_check()
         
         if self.success is None:
-            self.result = 'UNDF'
+            self.result = 'SKIP'
         else:
             if self.success:
                 self.result = 'PASS'
@@ -107,6 +107,20 @@ class Checker:
         self.question = question
         self.answer = self.display.ask(self.question_context, question)
         return self.answer
+
+    def ask_if_correct(self, question="Is it correct?"):
+        answer = self.ask(question + " ([Y]es/[n]o/[s]kip)")
+        
+        if answer == 'n' or answer == 'N':
+            self.set_message("Manually set to not compliant")
+            return False
+        if answer == 's' or answer == 'S':
+            self.set_message("Skipped")
+            return None
+        else:
+            self.set_message("Manually set to compliant")
+            return True
+
 
     # Handle result display
     def set_message(self, message):

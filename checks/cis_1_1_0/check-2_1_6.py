@@ -28,13 +28,5 @@ class Check_CIS_2_1_6(Checker):
             self.add_question_context(f'Reported model is {config_system_status["platform"]}.')
             
         self.add_question_context(f'Go to https://docs.fortinet.com/upgrade-tool and check that if is the latest version.')
-        answer=self.ask("Is it the latest version and is it still supported? (Y/n)")
-
-        if answer == 'n' or answer == 'N':
-            self.set_message("Manually set to not compliant")
-            return False
-        else:
-            self.set_message("Manually set to compliant")
-            return True
-
-        return None
+        
+        return self.ask_if_correct("Is it the latest version and is it still supported?")

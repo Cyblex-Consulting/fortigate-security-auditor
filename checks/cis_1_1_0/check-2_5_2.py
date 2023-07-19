@@ -33,11 +33,5 @@ class Check_CIS_2_5_2(Checker):
             if "type" in interface.keys() and interface["type"] == "physical":
                 if interface["edit"] not in monitored_interfaces:
                     self.add_question_context(f'{interface["edit"]}')
-        answer = self.ask('Is that Ok? (Y/n)')
-        
-        if answer == 'n' or answer == 'N':
-            self.set_message("Manually set to not compliant")
-            return False
-        else:
-            self.set_message("Manually set to compliant")
-            return True
+                    
+        return self.ask_if_correct()

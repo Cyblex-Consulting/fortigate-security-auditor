@@ -18,13 +18,4 @@ class Check_Example_Manual(Checker):
 
         self.add_question_context("Test Step")
 
-        answer = self.ask("Is it ok? (Y/n)")
-
-        if answer == 'n' or answer == 'N':
-            self.set_message("Manually set to not compliant")
-            return False
-        else:
-            self.set_message("Manually set to compliant")
-            return True
-
-        return None
+        return self.ask_if_correct()

@@ -19,10 +19,4 @@ class Check_CIS_3_1(Checker):
 
         self.add_question_context('Unused policy shall be checked manually by resetting the counters and then checking which rule never matched.')
         
-        answer = self.ask('Was that performed and the result was satisfactory? (Y/n)')
-        if answer == 'n' or answer == 'N':
-            self.set_message("Manually set to not compliant")
-            return False
-        else:
-            self.set_message("Manually set to compliant")
-            return True
+        return self.ask_if_correct('Was that performed and the result was satisfactory?')

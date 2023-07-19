@@ -29,14 +29,7 @@ class Check_CIS_2_4_1(Checker):
                     username_admin_exists = True
 
         if username_admin_exists:
-            question = '"admin" user exists. Is the default password changed? (Y/n)'
-            answer = self.ask(question)
-            if answer == 'n' or answer == 'N':
-                self.set_message("Manually set to not compliant")
-                return False
-            else:
-                self.set_message("Manually set to compliant")
-                return True
+            return self.ask_if_correct('"admin" user exists. Is the default password changed?')
         else:
             self.set_message('User "admin" does not exist so this requirement is not really applicable. Considering PASS')
             return True

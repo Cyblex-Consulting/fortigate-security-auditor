@@ -24,11 +24,4 @@ class Check_CIS_2_1_3(Checker):
 
         self.question_context = 'The configured timezone is ' + self.firewall.all_timezones[timezone]
 
-        answer = self.ask("Is it correct? (Y/n)")
-        
-        if answer == 'n' or answer == 'N':
-            self.set_message("Manually set to not compliant")
-            return False
-        else:
-            self.set_message("Manually set to compliant")
-            return True
+        return self.ask_if_correct()

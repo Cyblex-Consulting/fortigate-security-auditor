@@ -57,13 +57,7 @@ class Check_Cyblex_2(Checker):
                 for rule in suspicious_rules:
                    self.add_question_context(f"{rule['uuid']}: {rule['name']}")
                    self.add_question_context(f"{rule['comments']}")
-                answer = self.ask('Is that Ok? (Y/n)')
-                if answer == 'n' or answer == 'N':
-                    self.set_message("Manually set to not compliant")
-                    return False
-                else:
-                    self.set_message("Manually set to compliant")
-                    return True
+                return self.ask_if_correct()
             else:
                 self.set_message("No policy with suspicious name found")
                 return True

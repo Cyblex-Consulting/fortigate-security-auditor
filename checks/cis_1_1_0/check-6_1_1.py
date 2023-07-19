@@ -26,11 +26,4 @@ class Check_CIS_6_1_1(Checker):
         
         self.add_question_context(f'Certificate name for the SSL VPN is : {server_cert_name}')
 
-        answer=self.ask("Is it a trusted certificate? (Y/n)")
-
-        if answer == 'n' or answer == 'N':
-            self.set_message("Manually set to not compliant")
-            return False
-        else:
-            self.set_message("Manually set to compliant")
-            return True
+        return self.ask_if_correct('Is it a trusted certificate?')
