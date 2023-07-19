@@ -109,6 +109,7 @@ class Checker:
         return self.answer
 
     def ask_if_correct(self, question="Is it correct?"):
+        
         answer = self.ask(question + " ([Y]es/[n]o/[s]kip)")
         
         if answer == 'n' or answer == 'N':
@@ -145,12 +146,24 @@ class Checker:
         return f'{self.benchmark_author}-{self.id}'
     
     def get_log(self):
+        log =""
         if self.question is not None:
-            log = "\n".join(self.question)
-            log += "\n"
+            if self.question_context is not None:
+                if isinstance(self.question_context, list):
+                    log += "\n".join(self.question_context)
+                else:
+                    log += self.question_context
+                log += "\n"
+            if self.question is not None:
+                log += self.question
+                log += "\n"
+            if self.answer is not None:
+                log += self.answer
+                log += "\n"
+            if self.message is not None:
+                log += "\n".join(self.message)
+        elif self.message is not None:
             log += "\n".join(self.message)
-        else:
-            log = "\n".join(self.message)
         return log
 
     # Helper function to get the correct config bloc in config dict

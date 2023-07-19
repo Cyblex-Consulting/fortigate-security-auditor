@@ -157,6 +157,7 @@ if outputfile is not None:
     print('------------------------------------------------')
     print(f'[+] Exporting results in {outputfile}')
     outputfile = open(outputfile,"w+")
+    outputfile.write("Check ID,Result,Check Title,Log\n")
     for performed_check in performed_checks:
         cleaned_message = performed_check.get_log().replace('"', '\'')
         line = f'{performed_check.get_id()},{performed_check.result},{performed_check.title},"{cleaned_message}"\n'
