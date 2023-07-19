@@ -7,6 +7,7 @@ import argparse
 from pathlib import Path
 from json import JSONDecodeError
 import fortios_xutils.parser
+import os
 
 parser = argparse.ArgumentParser(description='Apply a benchmark to a Fortigate configuration file. \
         Example: fortigate-security-auditor.py -q data.json')
@@ -29,20 +30,27 @@ outputfile = args.output
 cache_file_path = str(Path.home()) + '/.cache/fortigate-security-auditor.json'
 
 # Create/Open cache file
-try:
-    cache_file = open(cache_file_path, "r+")
-    cache = json.load(cache_file)
-    cache_file.close()
-    if not filepath in cache.keys():
-        # There is no cache for this fortigate configuration file
-        cached_results = {}
+if not os.path.exists(cache_file_path):
+    if args.resume:
+        print(f'[!] Cannot resume this benchmark because there is no cache file')
+        exit(-1)
     else:
-        cached_results = cache[filepath]
-except JSONDecodeError as e:
-    print(e)
-    print("[!] Error loading cache file. Re-creating it")
-    cache = {}
+        print(f'[!] Creating local cache file in {cache_file_path}')
+        cache_file = open(cache_file_path, mode='a')
+        cache_file.write("{}")
+        cache_file.close()
+cache_file = open(cache_file_path, "r+")
+cache = json.load(cache_file)
+cache_file.close()
+    
+if not filepath in cache.keys():
+    # There is no cache for this fortigate configuration file
+    if args.resume:
+        print(f'[!] Cannot resume this benchmark because there is no cache results for config {filepath}')
+        exit(-1)
     cached_results = {}
+else:
+    cached_results = cache[filepath]
 
 # Load fortigate configuration file
 print(f'[+] Configuration file: {filepath}')
@@ -90,7 +98,7 @@ for checker in checkers:
                 checker.skip()
             else:
                 if args.resume:
-                    if checker.id in cached_results.keys():
+                    if checker.get_id() in cached_results.keys():
                         # There is a cached result for this check
                         checker.restore_from_cache(cached_results[checker.get_id()])
                     else:
@@ -101,7 +109,7 @@ for checker in checkers:
         performed_checks.append(checker)
 
         # Save to cache
-        cached_results[checker.get_id()] = {"result": checker.result, "message": checker.message, "question": checker.question}
+        cached_results[checker.get_id()] = {"result": checker.result, "message": checker.message, "question": checker.question, "question_context": checker.question_context, "answer": checker.answer}
 
 print('[+] Finished')
 print('------------------------------------------------')

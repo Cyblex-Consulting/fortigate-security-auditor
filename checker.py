@@ -14,6 +14,7 @@ class Checker:
         self.benchmark_author = None
         self.question_context = None
         self.question = None
+        self.answer = None
 
     def __lt__(self, other):
         return self.id < other.id
@@ -50,14 +51,17 @@ class Checker:
         self.message = cached_result["message"]
         self.question = cached_result["question"]
         self.question_context = cached_result["question_context"]
+        self.answer = cached_result["answer"]
         print(f'[{self.get_id()}] {self.title}', end='')
         print(f' : {self.result}')
         if self.verbose and self.question_context is not None:
-            self.display.print(self.question_context)
+            self.display.show(self.question_context)
         if self.verbose and self.question is not None:
-            self.display.print(self.question)
+            self.display.show(self.question)
+        if self.verbose and self.answer is not None:
+            self.display.show(self.answer)
         if self.verbose and self.message is not None:
-            self.display.print(self.message)
+            self.display.show(self.message)
 
     def skip(self):
         print(f'[{self.get_id()}] {self.title} : SKIP')
@@ -100,7 +104,9 @@ class Checker:
 
     def ask(self, question):
         self.manual_entry = True
-        return self.display.ask(self.question_context, question)
+        self.question = question
+        self.answer = self.display.ask(self.question_context, question)
+        return self.answer
 
     # Handle result display
     def set_message(self, message):
