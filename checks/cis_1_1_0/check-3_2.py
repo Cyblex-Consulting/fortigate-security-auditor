@@ -25,7 +25,9 @@ class Check_CIS_3_2(Checker):
         
         if len(config_firewall_policy['edits']) > 0:
             for edit in config_firewall_policy['edits']:
-                if "service" in edit.keys() and edit['service'] == 'ALL':
+                if "service" in edit.keys() and edit['service'] == 'ALL' and "action" in edit.keys():
+                    # it seems that when a policy is blocking, there is no "action" key. Here we look
+                    # only for policies that are not blocking and using service ALL
                     fail = True
                     self.add_message(f'The policy {edit["uuid"]} is not compliant:')
                     if "name" in edit.keys():
