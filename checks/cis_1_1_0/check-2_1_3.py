@@ -22,9 +22,9 @@ class Check_CIS_2_1_3(Checker):
 
         timezone = config_system_global["timezone"]
 
-        question = 'Is the timezone ' + self.firewall.all_timezones[timezone] + ' correct? (Y/n)'
+        self.question_context = 'The configured timezone is ' + self.firewall.all_timezones[timezone]
 
-        answer = self.ask(question)
+        answer = self.ask("Is it correct? (Y/n)")
         
         if answer == 'n' or answer == 'N':
             self.set_message("Manually set to not compliant")
