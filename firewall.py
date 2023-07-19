@@ -115,6 +115,12 @@ class Firewall:
         interfaces = config_system_interface["edits"]
         return interfaces
         
+    # Returns all firewall zones
+    def get_zones(self):
+        config_system_zone = self.get_config("system zone")
+        zones = config_system_zone["edits"]
+        return zones
+    
     # Returns WAN interfaces. If unknown, prompt the user.
     def get_wan_interfaces(self):
         if self.wan_interfaces is None:
@@ -123,8 +129,19 @@ class Firewall:
             interfaces = self.get_interfaces()
             for interface in interfaces:
                 name = interface["edit"]
-                question_context.append(f'{name}')
-            answer = self.display.ask(question_context, "Enter the WAN interfaces, comma separated (for instance: port1,port2)")
+                question_context.append(f'- {name}')
+                
+            question_context.append('All these zones exist on the device:')
+            zones = self.get_zones()
+            for zone in zones:
+                name = zone["edit"]
+                if isinstance(zone["interface"], list):
+                    child_interfaces = ", ".join(zone["interface"])
+                else:
+                    child_interfaces = zone["interface"]
+                question_context.append(f'- {name}: {child_interfaces}')
+                
+            answer = self.display.ask(question_context, "Enter the WAN interfaces or zones, comma separated and case sensitive (for instance: port1,port2,zone_wan)")
                         
             self.set_wan_interfaces(answer.replace(" ", "").split(","))    
         
