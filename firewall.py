@@ -1,9 +1,13 @@
+import fortiguard
+
 class Firewall:
     
     def __init__(self, config, display, verbose=False):
         self.config = config
         self.wan_interfaces = None
         self.display = display
+        # Fortiguard object
+        self.fortiguard = fortiguard.Fortiguard()
         self.all_timezones = {
             "01":"(GMT-11:00) Midway Island, Samoa",
             "02":"(GMT-10:00) Hawaii",
@@ -237,4 +241,20 @@ class Firewall:
 
         return result
 
+    # Returns App Control profiles. Allows filtering
+    def get_appcontrol_profiles(self, names=None):
+        config_appcontrol_profiles = self.get_config("application list")
+        if config_appcontrol_profiles is None:
+            return []
         
+        appcontrol_profiles = config_appcontrol_profiles['edits']
+        
+        result = []
+        for appcontrol_profile in appcontrol_profiles:
+            if names is not None:
+                if appcontrol_profile["edit"] not in names:
+                    continue
+            
+            result.append(appcontrol_profile)
+            
+        return result
