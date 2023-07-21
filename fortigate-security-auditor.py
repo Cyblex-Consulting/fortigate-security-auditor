@@ -8,6 +8,7 @@ from pathlib import Path
 from json import JSONDecodeError
 import fortios_xutils.parser
 import os
+import shutil
 
 parser = argparse.ArgumentParser(description='Apply a benchmark to a Fortigate configuration file. \
         Example: fortigate-security-auditor.py -q data.json')
@@ -21,6 +22,7 @@ parser.add_argument('-c', '--resume', help='Resume an audit that was already sta
 parser.add_argument('-w', '--wan', help='List of wan interfaces separated by spaces (example: --wan port1 port2)', nargs='+', default=None)
 parser.add_argument('--interfaces', help='Show list of interfaces and exit', action='store_true')
 parser.add_argument('--zones', help='Show list of zones and exit', action='store_true')
+parser.add_argument('--autofix', help='Automatically try to fix errors in input file', action='store_true')
 parser.add_argument('config', help='Configuration file exported from the fortigate or fortimanager', nargs=1)
 args = parser.parse_args()
 
@@ -63,7 +65,70 @@ if args.json:
     f.close()
     print(f'[+] Configuration loaded from JSON file')
 else:
-    parsed_output = fortios_xutils.parser.parse_show_config_and_dump(filepath, "tmp")
+    # Check for unicode decode error
+    
+    reparse = True
+    tmp_filepath = f'tmp/{os.path.basename(filepath)}'
+    shutil.copyfile(filepath, tmp_filepath)
+    
+    while reparse:
+        try:
+            # Check non unicode characters. This will trigger an exception and we will be able to fix the file
+            with open(tmp_filepath, 'r') as file :
+                    filedata = file.read()
+                    file.close()
+                    
+            # Try parsing
+            parsed_output = fortios_xutils.parser.parse_show_config_and_dump(tmp_filepath, "tmp")
+            reparse = False
+            os.remove(tmp_filepath)
+        except TypeError as e:
+            if str(e) == "dict() got multiple values for keyword argument 'config'":
+                print(f'[!] It seems you ran into bug https://github.com/ssato/python-anyconfig-fortios-backend/issues/3')
+                print(f'    I can try to apply a dirty fix by replacing the following configuration block:')
+                print(f'       config loggrp-permission')
+                print(f'       set config read')
+                print(f'       end')
+                print(f'    by:')
+                print(f'       config loggrp-permission')
+                print(f'       set configxxx read')
+                print(f'       end')
+                print(f'    It may fail some checks that would evaluate this configuration items.')
+                if args.autofix:
+                    print(f'[+] Trying to fix the issue')
+                else:
+                    print(f'[?] Type \'yes\' to continue or Ctrl-C to quit')
+                    while input() != "yes":
+                        print(f'[?] Type \'yes\' to continue or Ctrl-C to quit')
+                
+                    
+                # Fix the set config read issue               
+                with open(tmp_filepath, 'r') as file :
+                    filedata = file.read()
+                filedata = filedata.replace('set config read', 'set configxxx read')
+                with open(tmp_filepath, 'w') as file:
+                    file.write(filedata)
+                    
+                reparse = True
+        except UnicodeDecodeError as e:
+            print(f'[!] Parsing failed due to characters not utf-8 encoded')
+            print(f'    I can try to remove those characters and re-parse again')
+            print(f'    Most of the time, non utf-8 characters are in comments or non critical items, however that may fail some checks.')
+            if args.autofix:
+                print(f'[+] Trying to fix the issue')
+            else:
+                print(f'[?] Type \'yes\' to continue or Ctrl-C to quit')
+                while input() != "yes":
+                    print(f'[?] Type \'yes\' to continue or Ctrl-C to quit')
+                
+            # Fix the encoding
+            with open(tmp_filepath, 'r', encoding='utf-8', errors='ignore') as file :
+                    filedata = file.read()
+                    file.close()
+            with open(tmp_filepath, 'w') as file:
+                    file.write(filedata)
+            reparse = True
+        
     config = parsed_output[1]["configs"]
     print(f'[+] Configuration succesfully parsed')
 
