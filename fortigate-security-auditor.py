@@ -11,7 +11,7 @@ import os
 import shutil
 
 parser = argparse.ArgumentParser(description='Apply a benchmark to a Fortigate configuration file. \
-        Example: fortigate-security-auditor.py -q data.json')
+        Example: fortigate-security-auditor.py -q -o results.csv -l 1 2 -w WAN1 WAN2 --autofix firewall.conf')
 parser.add_argument('-q', '--quiet', help='Not interactive: ignore manual steps', action='store_true')
 parser.add_argument('-v', '--verbose', help='Increase verbosity', action='store_true')
 parser.add_argument('-j', '--json', help='Input file is json already parsed by fortios_xutils', action='store_true')
