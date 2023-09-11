@@ -17,6 +17,10 @@ class Check_CIS_2_1_4(Checker):
 
         config_system_ntp = self.get_config("system ntp")
 
+        if config_system_ntp is None:
+            self.set_message(f'No "config system ntp" bloc in configuration file')
+            return False
+        
         if "type" not in config_system_ntp.keys():
             self.set_message(f'typesync key is not defined')
             return False

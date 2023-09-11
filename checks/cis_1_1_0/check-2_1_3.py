@@ -16,6 +16,10 @@ class Check_CIS_2_1_3(Checker):
     def do_check(self):
         config_system_global = self.get_config("system global")
 
+        if config_system_global is None:
+            self.set_message(f'No "config system global" bloc in configuration file')
+            return False
+        
         if not "timezone" in config_system_global.keys():
             self.set_message("No timezone defined")
             return False

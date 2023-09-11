@@ -16,6 +16,10 @@ class Check_CIS_1_1(Checker):
     def do_check(self):
         config_system_dns = self.get_config("system dns")
 
+        if config_system_dns is None:
+            self.set_message(f'No "config system dns" bloc in configuration file')
+            return False
+
         if "primary" not in config_system_dns.keys():
             self.set_message(f'No primary DNS configured')
             return False

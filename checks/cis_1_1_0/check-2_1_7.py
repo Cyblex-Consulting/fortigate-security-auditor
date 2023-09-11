@@ -16,6 +16,10 @@ class Check_CIS_2_1_7(Checker):
     def do_check(self):
         config_system_autoinstall = self.get_config("system auto-install")
 
+        if config_system_autoinstall is None:
+            self.set_message(f'No "config system autoinstall" bloc in configuration file')
+            return False
+        
         if "auto-install-config" not in config_system_autoinstall.keys():
             self.set_message(f'No auto-install-config key')
             return False
